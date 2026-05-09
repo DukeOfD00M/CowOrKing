@@ -1,7 +1,7 @@
 # CowOrKing
 An add-on to Streamer.bot and OBS for Co-Working Streams, with ToDo-Lists, Work/Break-Timers etc.
 
-# Einrichung
+# Einrichtung
 - Streamer bot Import
 - html-Dateien in ein lokales Verzeichnis
 - json und config Ordner in dasselbe Verzeichnis
