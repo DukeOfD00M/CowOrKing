@@ -3,6 +3,9 @@ An add-on to Streamer.bot and OBS for Co-Working Streams, with ToDo-Lists, Work/
 
 # English version will follow soon
 
+# Credits: Teile des Projekts, z.B. das Notizblockdesign, wurden inspiriert von BlackyWhoElse:
+https://github.com/BlackyWhoElse/streamer.bot-actions/tree/main/widget/todo
+
 # Einrichtung
 - Streamer bot Import
 - html-Dateien in ein lokales Verzeichnis
