@@ -1,0 +1,43 @@
+[
+    {
+        "id": "commands",
+        "headline": "Commands",
+        "theme": {
+            "bgColor": "#440000",
+            "bgOpacity": "0.92",
+            "accentColor": "#c0622a",
+            "headlineColor": "#d4884a",
+            "itemColor": "#c8a882",
+            "checkColor": "#c87830",
+            "pauseColor": "#b8860b",
+            "paperWidth": "400px",
+            "paperHeight": "800px",
+            "scrollSpeed": "20s",
+            "scrollPause": "3s",
+            "fontSize": "24px"
+        },
+        "items": {
+            "1": {
+                "value": "!add -xxx Eintrag hinzufügen"
+            },
+            "2": {
+                "value": "!done -n / -xxx Eintrag erledigen"
+            },
+            "3": {
+                "value": "!pause -n / -xxx Eintrag pausieren"
+            },
+            "4": {
+                "value": "!cont -n / -xxx Eintrag fortsetzen"
+            },
+            "5": {
+                "value": "!del -n / -xxx Lösche Eintrag"
+            },
+            "6": {
+                "value": " !deldone Alle erledigten löschen"
+            },
+            "7": {
+                "value": " !print -all Ausgabe im Chat"
+            }
+        }
+    }
+]

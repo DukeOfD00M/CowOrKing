@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Co-Work Todo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=DM+Mono:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+    --bg-color:          #1a0a00;
+    --bg-opacity:        0.92;
+    --line-color:        rgba(180, 80, 0, 0.35);
+    --margin-line-color: rgba(220, 60, 0, 0.55);
+    --accent-color:      #c0622a;
+    --headline-color:    #d4884a;
+    --item-color:        #c8a882;
+    --item-done-color:   #7a6248;
+    --item-pause-color:  #8a7055;
+    --strike-color:      #a06030;
+    --checkbox-color:    #a07040;
+    --check-color:       #c87830;
+    --pause-color:       #b8860b;
+    --font-size:         19px;
+    --line-height:       28px;
+    --paper-width:       420px;
+    --paper-height:      400px;
+    --scroll-speed:      20s;
+    --scroll-pause:      3s;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    background: transparent;
+    font-family: 'DM Mono', monospace;
+}
+
+#paper {
+    position: relative;
+    width: var(--paper-width);
+    height: var(--paper-height);
+    background-color: var(--bg-color);
+    opacity: var(--bg-opacity);
+    border-radius: 3px 3px 6px 6px;
+    box-shadow: 2px 4px 18px rgba(0,0,0,0.7), inset 0 0 40px rgba(0,0,0,0.3);
+    overflow: hidden;
+    transition: background-color 0.5s, opacity 0.5s;
+}
+
+/* Lochrand oben */
+#paper::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 14px;
+    background: repeating-linear-gradient(
+        90deg,
+        transparent 0px, transparent 30px,
+        rgba(0,0,0,0.5) 30px, rgba(0,0,0,0.5) 32px
+    );
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    z-index: 3;
+}
+
+/* Rote Randlinie */
+#paper::after {
+    content: '';
+    position: absolute;
+    top: 0; bottom: 0; left: 48px;
+    width: 1.5px;
+    background: var(--margin-line-color);
+    box-shadow: 0 0 6px rgba(220,60,0,0.3);
+    z-index: 2;
+}
+
+/* Horizontale Linien */
+#lines {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-image: repeating-linear-gradient(
+        transparent 0px,
+        transparent calc(var(--line-height) - 1px),
+        var(--line-color) calc(var(--line-height) - 1px),
+        var(--line-color) var(--line-height)
+    );
+    background-position: 0 24px;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Headline — fest, scrollt nicht mit */
+#header {
+    position: absolute;
+    top: 16px;
+    left: 58px; right: 24px;
+    z-index: 2;
+}
+
+#headline {
+    font-family: 'Caveat', cursive;
+    color: var(--headline-color);
+    font-size: calc(var(--font-size) * 1.45);
+    font-weight: 600;
+    line-height: calc(var(--line-height) * 1.1);
+    border-bottom: 1.5px solid var(--accent-color);
+    display: inline-block;
+    padding-bottom: 2px;
+}
+
+/* Sanfte Fade-Ränder oben/unten */
+#fade-top, #fade-bottom {
+    position: absolute;
+    left: 0; right: 0;
+    height: 28px;
+    z-index: 2;
+    pointer-events: none;
+}
+#fade-top    { top: 56px; }
+#fade-bottom { bottom: 0; }
+
+/* Scroll-Viewport */
+#scroll-viewport {
+    position: absolute;
+    top: 56px;
+    left: 0; right: 0; bottom: 0;
+    overflow: hidden;
+    z-index: 1;
+}
+
+#scroll-inner { will-change: transform; }
+
+/* Liste */
+#list {
+    list-style: none;
+    padding: 8px 24px 8px 58px;
+}
+
+#list li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: var(--line-height);
+    animation: slideIn 0.25s ease;
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateX(-5px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+
+/* ── Checkbox ── */
+.cb-box {
+    flex-shrink: 0;
+    width: 18px; height: 18px;
+    border: 1.5px solid var(--checkbox-color);
+    border-radius: 2px;
+    position: relative;
+    transition: border-color 0.3s, background 0.3s;
+}
+
+.state-ready .cb-box { border-color: var(--check-color); }
+.state-ready .cb-box::after {
+    content: '';
+    position: absolute;
+    left: 1px; top: 5px;
+    width: 14px; height: 7px;
+    border-left: 2px solid var(--check-color);
+    border-bottom: 2px solid var(--check-color);
+    transform: rotate(-45deg) translateY(-2px);
+}
+
+.state-pause .cb-box {
+    border-color: var(--pause-color);
+    background: rgba(184,134,11,0.08);
+}
+.state-pause .cb-box::before,
+.state-pause .cb-box::after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    width: 4px; height: 10px;
+    background: var(--pause-color);
+    border-radius: 1px;
+}
+.state-pause .cb-box::before { left: 3px; }
+.state-pause .cb-box::after  { left: 9px; transform: none; border: none; }
+
+/* ── Text ── */
+.value {
+    font-family: 'Caveat', cursive;
+    font-size: var(--font-size);
+    color: var(--item-color);
+    line-height: var(--line-height);
+    position: relative;
+    transition: color 0.4s, opacity 0.4s;
+}
+
+.value::after {
+    content: '';
+    position: absolute;
+    top: 50%; left: 0;
+    width: 100%; height: 1px;
+    background: var(--strike-color);
+    transform: translateY(-50%) scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s ease;
+}
+
+.state-ready .value { color: var(--item-done-color); opacity: 0.8; }
+.state-ready .value::after { transform: translateY(-50%) scaleX(1); }
+.state-pause .value { color: var(--item-pause-color); font-style: italic; opacity: 0.65; }
+
+/* ── User-Spalte ── */
+.user-col {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+    padding-left: 8px;
+}
+
+.user-avatar {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+    opacity: 0.75;
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.user-initials {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: rgba(192,98,42,0.2);
+    border: 1px solid var(--accent-color);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 9px;
+    color: var(--accent-color);
+    flex-shrink: 0;
+    opacity: 0.7;
+}
+
+.user-tag {
+    font-size: 10px;
+    color: var(--accent-color);
+    opacity: 0.5;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 90px;
+}
+
+#empty-hint {
+    font-size: 12px;
+    color: var(--item-pause-color);
+    opacity: 0.4;
+    font-style: italic;
+    padding: 8px 0 4px;
+    list-style: none;
+}
+</style>
+</head>
+<body>
+
+<div id="paper">
+    <div id="lines"></div>
+
+    <div id="header">
+        <h1 id="headline"></h1>
+    </div>
+
+    <div id="fade-top"></div>
+    <div id="fade-bottom"></div>
+
+    <div id="scroll-viewport">
+        <div id="scroll-inner">
+            <ul id="list"></ul>
+        </div>
+    </div>
+</div>
+
+<script>
+const JSON_URL = './json/todo.json';
+
+const CSS_MAP = {
+    bgColor:       '--bg-color',
+    bgOpacity:     '--bg-opacity',
+    accentColor:   '--accent-color',
+    headlineColor: '--headline-color',
+    itemColor:     '--item-color',
+    checkColor:    '--check-color',
+    pauseColor:    '--pause-color',
+    paperWidth:    '--paper-width',
+    paperHeight:   '--paper-height',
+    scrollSpeed:   '--scroll-speed',
+    scrollPause:   '--scroll-pause',
+    fontSize:      '--font-size',
+};
+
+function applyTheme(theme) {
+    if (!theme) return;
+    Object.keys(CSS_MAP).forEach(k => {
+        if (theme[k] !== undefined)
+            document.documentElement.style.setProperty(CSS_MAP[k], theme[k]);
+    });
+    // Fade-Farbe an Hintergrund anpassen
+    const bg = theme.bgColor
+        || getComputedStyle(document.documentElement).getPropertyValue('--bg-color').trim();
+    document.getElementById('fade-top').style.background =
+        `linear-gradient(to bottom, ${bg}, transparent)`;
+    document.getElementById('fade-bottom').style.background =
+        `linear-gradient(to top, ${bg}, transparent)`;
+}
+
+/* ── Auto-Scroll ── */
+function updateScroll() {
+    const viewport = document.getElementById('scroll-viewport');
+    const inner    = document.getElementById('scroll-inner');
+    const viewH    = viewport.clientHeight;
+    const contentH = inner.scrollHeight;
+
+    // Altes Keyframe-Style entfernen & Animation zurücksetzen
+    const old = document.getElementById('scroll-style');
+    if (old) old.remove();
+    inner.style.animation = '';
+
+    if (contentH <= viewH) return; // Passt rein — kein Scroll nötig
+
+    const overflow = contentH - viewH;
+
+    const cs       = getComputedStyle(document.documentElement);
+    const speedMs  = parseFloat(cs.getPropertyValue('--scroll-speed')) * 1000 || 20000;
+    const pauseMs  = parseFloat(cs.getPropertyValue('--scroll-pause')) * 1000 || 3000;
+    const totalMs  = speedMs + pauseMs * 2; // Pause oben + Pause unten
+    const p1       = (pauseMs / totalMs * 100).toFixed(2);         // Ende Pause oben
+    const p2       = ((pauseMs + speedMs) / totalMs * 100).toFixed(2); // Ende Scroll
+
+    const style = document.createElement('style');
+    style.id = 'scroll-style';
+    style.textContent = `
+        @keyframes listScroll {
+            0%      { transform: translateY(0); }
+            ${p1}%  { transform: translateY(0); }
+            ${p2}%  { transform: translateY(-${overflow}px); }
+            100%    { transform: translateY(-${overflow}px); }
+        }
+        #scroll-inner { animation: listScroll ${totalMs}ms linear infinite; }
+    `;
+    document.head.appendChild(style);
+}
+
+/* ── Render ── */
+function render(data) {
+    const list  = Array.isArray(data) ? data[0] : data;
+    const items = list.items || {};
+    const ul    = document.getElementById('list');
+
+    document.getElementById('headline').textContent = list.headline || '';
+    ul.querySelectorAll('li').forEach(el => el.remove());
+
+    const keys = Object.keys(items);
+
+    if (keys.length === 0) {
+        const hint = document.createElement('li');
+        hint.id = 'empty-hint';
+        hint.textContent = 'Noch keine Einträge…';
+        ul.appendChild(hint);
+        updateScroll();
+        return;
+    }
+
+    keys.forEach(key => {
+        const item   = items[key];
+        const status = item.status || 'added';
+
+        const li = document.createElement('li');
+        li.id        = `item-${key}`;
+        li.className = `state-${status}`;
+
+        const box = document.createElement('div');
+        box.className = 'cb-box';
+
+        const label = document.createElement('span');
+        label.className   = 'value';
+        label.textContent = item.value || '';
+
+        li.appendChild(box);
+        li.appendChild(label);
+
+        if (item.user) {
+            const col = document.createElement('div');
+            col.className = 'user-col';
+
+            if (item.avatarUrl) {
+                const img = document.createElement('img');
+                img.className = 'user-avatar';
+                img.src = item.avatarUrl;
+                img.alt = item.user;
+                img.onerror = () => img.replaceWith(makeInitials(item.user));
+                col.appendChild(img);
+            } else {
+                col.appendChild(makeInitials(item.user));
+            }
+
+            const name = document.createElement('span');
+            name.className   = 'user-tag';
+            name.textContent = item.user;
+            col.appendChild(name);
+            li.appendChild(col);
+        }
+
+        ul.appendChild(li);
+    });
+
+    // Warten bis DOM gerendert, dann Scroll prüfen
+    requestAnimationFrame(() => requestAnimationFrame(updateScroll));
+}
+
+function makeInitials(name) {
+    const div = document.createElement('div');
+    div.className   = 'user-initials';
+    div.textContent = name.slice(0, 2).toUpperCase();
+    return div;
+}
+
+/* ── Polling alle 2 Sekunden ── */
+let lastJson = '';
+
+async function poll() {
+    try {
+        const res  = await fetch(JSON_URL + '?t=' + Date.now());
+        const text = await res.text();
+        if (text !== lastJson) {
+            lastJson = text;
+            const data = JSON.parse(text);
+            applyTheme(Array.isArray(data) ? data[0].theme : data.theme);
+            render(data);
+        }
+    } catch (e) {
+        console.warn('JSON laden fehlgeschlagen:', e);
+    }
+    setTimeout(poll, 2000);
+}
+
+poll();
+</script>
+</body>
+</html>

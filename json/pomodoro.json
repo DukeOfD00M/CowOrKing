@@ -1,0 +1,14 @@
+{
+    "command": null,
+    "autoTimer": false,
+    "workMinutes": 30,
+    "breakMinutes": 15,
+    "display": "circle",
+    "theme": {
+        "bgColor": "#440000",
+        "bgOpacity": "0.92",
+        "widgetSize": "200px",
+        "workColor": "#c8a882",
+        "breakColor": "#2ab8a0"
+    }
+}

@@ -1,0 +1,29 @@
+[
+    {
+        "id": "both",
+        "headline": "Streamer & Chat",
+        "theme": {
+            "bgColor": "#440000",
+            "bgOpacity": "0.92",
+            "accentColor": "#c0622a",
+            "headlineColor": "#d4884a",
+            "itemColor": "#c8a882",
+            "checkColor": "#c87830",
+            "pauseColor": "#b8860b",
+            "paperWidth": "400px",
+            "paperHeight": "800px",
+            "scrollSpeed": "20s",
+            "scrollPause": "3s",
+            "fontSize": "24px"
+        },
+        "items": {
+            "1": {
+                "user": "",
+                "avatarUrl": "",
+                "status": "added",
+                "id": "1",
+                "value": "Sample"
+            }
+        }
+    }
+]
