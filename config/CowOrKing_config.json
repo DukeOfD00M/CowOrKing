@@ -1,0 +1,10 @@
+{
+    "cok_autoTimer": false,
+    "cok_sepListStreamer": false,
+    "cok_resetPerStream": false,
+    "cok_workMinutes": 30,
+    "cok_breakMinutes": 15,
+    "cok_displayStyle": "circle",
+    "cok_path": "D:\\ToDo\\",
+    "cok_scene": "Chat"
+}

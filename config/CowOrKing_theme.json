@@ -1,0 +1,17 @@
+{
+    "cok_bgColor": "#440000",
+    "cok_bgOpacity": "0.92",
+    "cok_accentColor": "#c0622a",
+    "cok_headlineColor": "#d4884a",
+    "cok_itemColor": "#c8a882",
+    "cok_checkColor": "#c87830",
+    "cok_pauseColor": "#b8860b",
+    "cok_workColor": "#c8a882",
+    "cok_breakColor": "#2ab8a0",
+    "cok_paperWidth": "400px",
+    "cok_paperHeight": "800px",
+    "cok_scrollSpeed": "20s",
+    "cok_scrollPause": "3s",
+    "cok_fontSize": "24px",
+    "cok_widgetSize": "200px"
+}
