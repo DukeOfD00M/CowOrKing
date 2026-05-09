@@ -1,6 +1,11 @@
 # CowOrKing
 An add-on to Streamer.bot and OBS for Co-Working Streams, with ToDo-Lists, Work/Break-Timers etc.
 
+# Preview
+<img width="156" height="157" alt="image" src="https://github.com/user-attachments/assets/11a8c291-4617-47fd-b743-3225a06e4027" />
+<img width="340" height="257" alt="image" src="https://github.com/user-attachments/assets/58522792-ea1b-463f-adcb-b888d867e851" />
+<img width="294" height="582" alt="image" src="https://github.com/user-attachments/assets/960bd5c8-24d2-4007-aff8-691c556bacc3" />
+
 # English version will follow soon
 
 # Credits: Teile des Projekts, z.B. das Notizblockdesign, wurden inspiriert von BlackyWhoElse:
@@ -29,7 +34,7 @@ https://github.com/BlackyWhoElse/streamer.bot-actions/tree/main/widget/todo
 + !del (text)|(lfd) (löscht einzelnes ToDo)
 + !deldone (löscht alle ToDos die auf Status ready stehen)
 
-# Commands für Stremaer/Mods
+# Commands für Streamer/Mods
 + !setworkminutes (mm) (Setzt die Länge des Arbeitstimers)
 + !setbreakminutes (mm) (Setzt die Länge des Pausentimers)
 + !runworktimer (Setzt Timer auf "work" und startet den Timer)
